@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-function restrict() {
+const roles = ['basic', 'admin'];
+
+// basic
+function restrict(role) {
   return async (req, res, next) => {
     try {
       const token = req.cookies.token;
@@ -9,6 +12,14 @@ function restrict() {
         if (err) {
           return res.status(401).json({ message: 'Invalid credentials!' });
         }
+        // 0 < 1 => true
+        console.log(decoded);
+        if (role && roles.indexOf(decoded.userRole) < roles.indexOf(role)) {
+          return res.status(403).json({
+            message: 'Nu esti binevenit',
+          });
+        }
+
         req.decoded = decoded;
 
         next();
